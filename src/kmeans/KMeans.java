@@ -5,11 +5,14 @@
  */
 package kmeans;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Random;
 import java.util.Scanner;
-import org.omg.CORBA.INTERNAL;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -31,7 +34,7 @@ public class KMeans {
     public static int min(Double[] data, ArrayList<Double[]> centroid) {
         int minIndex = 0;
         Double[] distance = new Double[centroid.size()];
-
+        
         for (int i = 0; i < distance.length; i++) {
             distance[i] = euclideanDistance(data, centroid.get(i));
         }
@@ -71,13 +74,43 @@ public class KMeans {
         /*
             Looping input
          */
-        for (int i = 0; i < data; i++) {
-            for (int j = 0; j < attribute; j++) {
-                System.out.print("Masukkan dataset ke-" + i + " atribut ke-" + j + ": ");
-                dataset[i][j] = scan.nextDouble();
+//        for (int i = 0; i < data; i++) {
+//            for (int j = 0; j < attribute; j++) {
+//                System.out.print("Masukkan dataset ke-" + i + " atribut ke-" + j + ": ");
+//                dataset[i][j] = scan.nextDouble();
+//            }
+//            temp.add(dataset[i]);
+//        }
+
+        try {
+                BufferedReader buffReader = new BufferedReader(new FileReader("D:\\[DariBackup]\\Dokumen\\ITHB\\Kapsel\\KMeans\\src\\kmeans\\input.txt"));
+                String buffer = buffReader.readLine();
+                int i = 0;
+                
+                while (buffer != null) {
+                    String[] input = buffer.split(" ");
+                    int j = 0;
+                    
+                    for (String string : input) {
+                        dataset[i][j] = Double.parseDouble(string);
+                        j++;
+                    }
+                    
+                    Double[] copy = new Double[dataset[i].length];
+                    
+                    for (int k = 0; k < dataset[i].length; k++) {
+                        copy[k] = dataset[i][k];
+                    }
+                    
+                    temp.add(copy);
+                    
+                    buffer = buffReader.readLine();
+                    i++;
+                }
+                
+            } catch (IOException ex) {
+                Logger.getLogger(KMeans.class.getName()).log(Level.SEVERE, null, ex);
             }
-            temp.add(dataset[i]);
-        }
 
         System.out.println("\nData: ");
 
@@ -85,7 +118,11 @@ public class KMeans {
             for (int j = 0; j < dataset[0].length; j++) {
                 System.out.print(dataset[i][j] + "  ");
             }
-            System.out.println();
+            System.out.println(" - " + dataset[i].toString());
+        }
+        
+        for (Double[] doubles : temp) {
+            System.out.println(doubles.toString());
         }
 
         /*
@@ -123,9 +160,11 @@ public class KMeans {
                 }
             } else {
                 cluster.removeAll(cluster);
-                for (int i = 0; i < centroids.size(); i++) {
-                    cluster.add(centroids);
+                
+                for (int i = 0; i < clusterNum; i++) {
+                    cluster.add(new ArrayList<>());
                 }
+                
                 for (int i = 0; i < dataset.length; i++) {
                     int clusterIndex = min(dataset[i], centroids);
                     cluster.get(clusterIndex).add(dataset[i]);
@@ -166,7 +205,6 @@ public class KMeans {
                 }
             }
             for (int i = 0; i < cluster.size(); i++) {
-                System.out.println("masuk");
                 if (cluster.get(i).size() == before.get(i).size() && !firstIteration) {
                     change = false;
                     int j = 0;
@@ -198,13 +236,17 @@ public class KMeans {
 
                 for (int j = 0; j < centroids.size(); j++) {
                     for (int k = 0; k < centroids.get(j).length; k++) {
-                        System.out.print(centroids.get(j)[k] + "  ");
+                        System.out.printf("%.3f ", centroids.get(j)[k]);
                     }
                     System.out.println();
                 }
             }
             before = cluster;
             firstIteration = false;
+            
+            if (!change) {
+                System.out.println("TIDAK ADA PERUBAHAN");
+            }
         } while (change);
 
     }
