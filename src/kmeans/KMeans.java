@@ -47,6 +47,32 @@ public class KMeans {
 
         return minIndex;
     }
+    
+    public static void addArrayToArrayList (Double[] a, ArrayList<Double[]> b) {
+        Double[] copy = new Double[a.length];
+        
+        for (int i = 0; i < a.length; i++) {
+            copy[i] = a[i];
+        }
+        
+        b.add(copy);
+    }
+    
+    public static void addArrayListToArrayListofArrayList(ArrayList<Double[]> a, ArrayList<ArrayList<Double[]>> b) {
+        ArrayList<Double[]> copyArrList = new ArrayList<>();
+                
+        for (Double[] doubles : a) {
+            Double[] copy = new Double[doubles.length];
+
+            for (int i = 0; i < doubles.length; i++) {
+                copy[i] = doubles[i];
+            }
+
+            copyArrList.add(copy);
+        }
+
+        b.add(copyArrList);
+    }
 
     public static void main(String[] args) {
         // TODO code application logic here
@@ -96,13 +122,7 @@ public class KMeans {
                         j++;
                     }
                     
-                    Double[] copy = new Double[dataset[i].length];
-                    
-                    for (int k = 0; k < dataset[i].length; k++) {
-                        copy[k] = dataset[i][k];
-                    }
-                    
-                    temp.add(copy);
+                    addArrayToArrayList(dataset[i], temp);
                     
                     buffer = buffReader.readLine();
                     i++;
@@ -118,21 +138,17 @@ public class KMeans {
             for (int j = 0; j < dataset[0].length; j++) {
                 System.out.print(dataset[i][j] + "  ");
             }
-            System.out.println(" - " + dataset[i].toString());
+            System.out.println("");
         }
         
-        for (Double[] doubles : temp) {
-            System.out.println(doubles.toString());
-        }
-
         /*
             Looping untuk cari centroid random di awal
          */
         for (int i = 0; i < clusterNum; i++) {
             int randIndex = rand.nextInt(temp.size());
             ArrayList<Double[]> pointer = new ArrayList<>();
-            centroids.add(temp.get(randIndex));
-            pointer.add(temp.get(randIndex));
+            addArrayToArrayList(temp.get(randIndex), centroids);
+            addArrayToArrayList(temp.get(randIndex), pointer);
             cluster.add(pointer);
             temp.remove(randIndex);
         }
@@ -156,7 +172,7 @@ public class KMeans {
             if (firstIteration) {
                 for (int i = 0; i < temp.size(); i++) {
                     int clusterIndex = min(temp.get(i), centroids);
-                    cluster.get(clusterIndex).add(temp.get(i));
+                    addArrayToArrayList(temp.get(i), cluster.get(clusterIndex));
                 }
             } else {
                 cluster.removeAll(cluster);
@@ -167,9 +183,8 @@ public class KMeans {
                 
                 for (int i = 0; i < dataset.length; i++) {
                     int clusterIndex = min(dataset[i], centroids);
-                    cluster.get(clusterIndex).add(dataset[i]);
+                    addArrayToArrayList(dataset[i], cluster.get(clusterIndex));
                 }
-                firstIteration = false;
             }
 
             System.out.println("\nCluster Results: ");
@@ -188,7 +203,7 @@ public class KMeans {
             if (before == null) {
                 before = new ArrayList();
                 for (int i = 0; i < cluster.size(); i++) {
-                    before.add(cluster.get(i));
+                    addArrayListToArrayListofArrayList(cluster.get(i), before);
                 }
 
                 System.out.println("\nBefore Cluster Results: ");
@@ -241,12 +256,12 @@ public class KMeans {
                     System.out.println();
                 }
             }
-            before = cluster;
-            firstIteration = false;
             
-            if (!change) {
-                System.out.println("TIDAK ADA PERUBAHAN");
+            for (ArrayList<Double[]> arrayList : cluster) {
+                addArrayListToArrayListofArrayList(arrayList, before);
             }
+            
+            firstIteration = false;
         } while (change);
 
     }
