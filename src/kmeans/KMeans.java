@@ -83,7 +83,7 @@ public class KMeans {
         ArrayList<Double[]> temp = new ArrayList();
         ArrayList<Double[]> centroids = new ArrayList();
         ArrayList<ArrayList<Double[]>> cluster = new ArrayList();
-        ArrayList<ArrayList<Double[]>> before = null;
+        ArrayList<Double[]> before = null;
         Random rand = new Random();
 
         System.out.print("Masukkan jumlah cluster yang diinginkan: ");
@@ -202,67 +202,71 @@ public class KMeans {
 
             if (before == null) {
                 before = new ArrayList();
-                for (int i = 0; i < cluster.size(); i++) {
-                    addArrayListToArrayListofArrayList(cluster.get(i), before);
+                
+                for (int i = 0; i < centroids.size(); i++) {
+                    addArrayToArrayList(centroids.get(i), before);
                 }
 
-                System.out.println("\nBefore Cluster Results: ");
+                System.out.println("\nBefore Centroid Results: ");
 
                 for (int i = 0; i < before.size(); i++) {
-                    System.out.println("Cluster " + i);
-                    for (int j = 0; j < before.get(i).size(); j++) {
-                        for (int k = 0; k < before.get(i).get(j).length; k++) {
-                            System.out.print(before.get(i).get(j)[k] + "  ");
-                        }
-                        System.out.println();
+                    for (int j = 0; j < before.get(i).length; j++) {
+                        System.out.print(before.get(i)[j] + "  ");
                     }
+                    
                     System.out.println();
                 }
-            }
-            for (int i = 0; i < cluster.size(); i++) {
-                if (cluster.get(i).size() == before.get(i).size() && !firstIteration) {
-                    change = false;
-                    int j = 0;
-                    int k = 0;
-                    while (!change && j < cluster.get(i).size()) {
-                        while (k < cluster.get(i).get(j).length) {
-                            if (cluster.get(i).get(j)[k] != before.get(i).get(j)[k]) {
-                                change = true;
-                            }
-                            k++;
-                        }
-                        j++;
-                    }
-                }
+                
+                System.out.println();
             }
             
-            if (change) {
-                for (int j = 0; j < cluster.size(); j++) {
-                    for (int k = 0; k < attribute; k++) {
-                        Double mean = new Double(0);
-                        for (int l = 0; l < cluster.get(j).size(); l++) {
-                            mean += cluster.get(j).get(l)[k];
-                        }
-                        centroids.get(j)[k] = mean / cluster.get(j).size();
+            
+            for (int j = 0; j < cluster.size(); j++) {
+                for (int k = 0; k < attribute; k++) {
+                    Double mean = new Double(0);
+                    
+                    for (int l = 0; l < cluster.get(j).size(); l++) {
+                        mean += cluster.get(j).get(l)[k];
                     }
-                }
-
-                System.out.println("New Centroid: ");
-
-                for (int j = 0; j < centroids.size(); j++) {
-                    for (int k = 0; k < centroids.get(j).length; k++) {
-                        System.out.printf("%.3f ", centroids.get(j)[k]);
-                    }
-                    System.out.println();
+                    
+                    centroids.get(j)[k] = mean / cluster.get(j).size();
                 }
             }
+
+            System.out.println("New Centroid: ");
+
+            for (int j = 0; j < centroids.size(); j++) {
+                for (int k = 0; k < centroids.get(j).length; k++) {
+                    System.out.printf("%.3f ", centroids.get(j)[k]);
+                }
+                System.out.println();
+            }
             
-            for (ArrayList<Double[]> arrayList : cluster) {
-                addArrayListToArrayListofArrayList(arrayList, before);
+            change = false;
+            int i = 0;
+            
+            while (!change && i < centroids.size()) {
+                int j = 0;
+
+                while (!change && j < centroids.get(i).length) {
+
+                    if (centroids.get(i)[j].doubleValue() != before.get(i)[j].doubleValue()) {
+                        change = true;
+                    }
+
+                    j++;
+                }
+                
+                i++;
+            }
+            
+            before.removeAll(before);
+            
+            for (Double[] doubles : centroids) {
+                addArrayToArrayList(doubles, before);
             }
             
             firstIteration = false;
         } while (change);
-
     }
 }
