@@ -16,7 +16,7 @@ import java.util.logging.Logger;
 
 /**
  *
- * @author Jeffry
+ * @author Jeffry Saputra
  */
 public class KMeans {
 
@@ -25,9 +25,11 @@ public class KMeans {
      */
     public static Double euclideanDistance(Double[] data, Double[] centroid) {
         Double d = new Double(0);
+        
         for (int j = 0; j < data.length; j++) {
             d += Math.pow(data[j] - centroid[j], 2);
         }
+        
         return Math.sqrt(d);
     }
 
@@ -78,7 +80,6 @@ public class KMeans {
         // TODO code application logic here
         int clusterNum, data, attribute;
         boolean change = true, firstIteration = true;
-
         Scanner scan = new Scanner(System.in);
         ArrayList<Double[]> temp = new ArrayList();
         ArrayList<Double[]> centroids = new ArrayList();
@@ -88,10 +89,8 @@ public class KMeans {
 
         System.out.print("Masukkan jumlah cluster yang diinginkan: ");
         clusterNum = scan.nextInt();
-
         System.out.print("Masukkan jumlah data yang diinginkan: ");
         data = scan.nextInt();
-
         System.out.print("Masukkan jumlah atribut untuk setiap data: ");
         attribute = scan.nextInt();
 
@@ -109,28 +108,26 @@ public class KMeans {
 //        }
 
         try {
-                BufferedReader buffReader = new BufferedReader(new FileReader("D:\\[DariBackup]\\Dokumen\\ITHB\\Kapsel\\KMeans\\src\\kmeans\\input.txt"));
-                String buffer = buffReader.readLine();
-                int i = 0;
-                
-                while (buffer != null) {
-                    String[] input = buffer.split(" ");
-                    int j = 0;
-                    
-                    for (String string : input) {
-                        dataset[i][j] = Double.parseDouble(string);
-                        j++;
-                    }
-                    
-                    addArrayToArrayList(dataset[i], temp);
-                    
-                    buffer = buffReader.readLine();
-                    i++;
+            BufferedReader buffReader = new BufferedReader(new FileReader("D:\\[DariBackup]\\Dokumen\\ITHB\\Kapsel\\KMeans\\src\\kmeans\\input.txt"));
+            String buffer = buffReader.readLine();
+            int i = 0;
+
+            while (buffer != null) {
+                String[] input = buffer.split(" ");
+                int j = 0;
+
+                for (String string : input) {
+                    dataset[i][j] = Double.parseDouble(string);
+                    j++;
                 }
-                
-            } catch (IOException ex) {
-                Logger.getLogger(KMeans.class.getName()).log(Level.SEVERE, null, ex);
+
+                addArrayToArrayList(dataset[i], temp);
+                buffer = buffReader.readLine();
+                i++;
             }
+        } catch (IOException ex) {
+            Logger.getLogger(KMeans.class.getName()).log(Level.SEVERE, null, ex);
+        }
 
         System.out.println("\nData: ");
 
@@ -138,6 +135,7 @@ public class KMeans {
             for (int j = 0; j < dataset[0].length; j++) {
                 System.out.print(dataset[i][j] + "  ");
             }
+            
             System.out.println("");
         }
         
@@ -147,6 +145,7 @@ public class KMeans {
         for (int i = 0; i < clusterNum; i++) {
             int randIndex = rand.nextInt(temp.size());
             ArrayList<Double[]> pointer = new ArrayList<>();
+            
             addArrayToArrayList(temp.get(randIndex), centroids);
             addArrayToArrayList(temp.get(randIndex), pointer);
             cluster.add(pointer);
@@ -157,21 +156,23 @@ public class KMeans {
 
         for (int i = 0; i < cluster.size(); i++) {
             System.out.println("Cluster " + i);
+            
             for (int j = 0; j < cluster.get(i).size(); j++) {
                 for (int k = 0; k < cluster.get(i).get(j).length; k++) {
                     System.out.print(cluster.get(i).get(j)[k] + "  ");
                 }
+                
                 System.out.println();
             }
+            
             System.out.println();
         }
-//        System.out.println(temp.get(0)[0] + " a " + temp.get(0)[1]);
-//        System.out.println(cluster.get(0).get(0)[0] + " b " + cluster.get(0).get(0)[1]);
 
         do {
             if (firstIteration) {
                 for (int i = 0; i < temp.size(); i++) {
                     int clusterIndex = min(temp.get(i), centroids);
+                    
                     addArrayToArrayList(temp.get(i), cluster.get(clusterIndex));
                 }
             } else {
@@ -183,6 +184,7 @@ public class KMeans {
                 
                 for (int i = 0; i < dataset.length; i++) {
                     int clusterIndex = min(dataset[i], centroids);
+                    
                     addArrayToArrayList(dataset[i], cluster.get(clusterIndex));
                 }
             }
@@ -191,12 +193,15 @@ public class KMeans {
 
             for (int i = 0; i < cluster.size(); i++) {
                 System.out.println("Cluster " + i);
+                
                 for (int j = 0; j < cluster.get(i).size(); j++) {
                     for (int k = 0; k < cluster.get(i).get(j).length; k++) {
                         System.out.print(cluster.get(i).get(j)[k] + "  ");
                     }
+                    
                     System.out.println();
                 }
+                
                 System.out.println();
             }
 
@@ -239,6 +244,7 @@ public class KMeans {
                 for (int k = 0; k < centroids.get(j).length; k++) {
                     System.out.printf("%.3f ", centroids.get(j)[k]);
                 }
+                
                 System.out.println();
             }
             
@@ -249,7 +255,6 @@ public class KMeans {
                 int j = 0;
 
                 while (!change && j < centroids.get(i).length) {
-
                     if (centroids.get(i)[j].doubleValue() != before.get(i)[j].doubleValue()) {
                         change = true;
                     }
